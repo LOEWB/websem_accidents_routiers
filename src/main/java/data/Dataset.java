@@ -1,6 +1,5 @@
-package dataProcess;
+package data;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class Dataset {
