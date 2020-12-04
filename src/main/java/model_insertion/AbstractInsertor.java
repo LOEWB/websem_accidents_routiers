@@ -6,12 +6,10 @@ import org.apache.jena.rdf.model.Model;
 
 public abstract class AbstractInsertor {
 
-    protected Dataset dataset;
     protected Parser parser;
     protected Model model;
 
-    public AbstractInsertor(Dataset dataset, Parser parser, Model model) {
-        this.dataset = dataset;
+    public AbstractInsertor(Parser parser, Model model) {
         this.parser = parser;
         this.model = model;
     }

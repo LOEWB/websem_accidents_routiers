@@ -1,24 +1,26 @@
 import data.Parser;
+import model_insertion.CaracInsertor;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MainApplication {
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Hello World");
-        Parser p = new Parser("src/main/resources/caracteristiques-2019.csv");
+
+        ClassLoader classLoader = MainApplication.class.getClassLoader();
+        URL url = classLoader.getResource("caracteristiques-2019.csv");
+        assert url != null: "Lien du fichier introuvable";
+        Parser p = new Parser(url.getPath());
         p.parseWithHeader(";");
-        System.out.println(p.getDataset().getData().get(0));
-        System.out.println(p.getDataset().getData().get(1));
-        System.out.println(p.getDataset().getData().get(2));
-        System.out.println(p.getDataset().getHeaders());
 
-        String st = "656323.5";
-        System.out.println(Double.parseDouble(st));
-        //p.getDataset().getData().stream().map( m -> m.get(0)).forEach(System.out::println);
-        //p.getDataset().getData().forEach( d -> System.out.println(d));
-        p.getDataset().getColumn("long").filter( v -> Double.parseDouble(v.replaceAll(",",".")) < 0).forEach(System.out::println);
-
-
+        Model model = ModelFactory.createDefaultModel();
+        CaracInsertor caracInsertor = new CaracInsertor(p, model);
+        caracInsertor.insert();
     }
 }
