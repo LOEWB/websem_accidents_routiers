@@ -52,13 +52,13 @@ public class CaracInsertor extends AbstractInsertor {
 
         });
         model.write(System.out, "Turtle");
-        String datasetURL = "http://localhost:3030/test2";
+        /*String datasetURL = "http://localhost:3030/test2";
         String sparqlEndpoint = datasetURL + "/sparql";
         String sparqlUpdate = datasetURL + "/update";
         String graphStore = datasetURL + "/data";
         RDFConnection conn = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
         conn.load(model);
-        conn.update("INSERT DATA { <test> a <TestClass> }");
+        conn.update("INSERT DATA { <test> a <TestClass> }");*/
 
 
 

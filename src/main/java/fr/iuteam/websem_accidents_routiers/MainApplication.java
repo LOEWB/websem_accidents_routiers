@@ -30,7 +30,7 @@ public class MainApplication {
 
         Model model = ModelFactory.createDefaultModel();
         CaracInsertor caracInsertor = new CaracInsertor(p, model);
-        //caracInsertor.insert();
+        caracInsertor.insert();
 
     }
 
