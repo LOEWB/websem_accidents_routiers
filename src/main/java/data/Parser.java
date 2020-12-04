@@ -42,5 +42,8 @@ public class Parser {
         this.dataset.setData(lines);
 
     }
+    public int getCol(String col){
+        return this.dataset.getHeaderColumn(col);
+    }
 
 }
