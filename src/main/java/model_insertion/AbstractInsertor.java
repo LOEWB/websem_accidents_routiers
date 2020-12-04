@@ -14,7 +14,7 @@ public abstract class AbstractInsertor {
         this.model = model;
     }
 
-    abstract void headerProcess();
+    abstract void insert();
 
 
 }
