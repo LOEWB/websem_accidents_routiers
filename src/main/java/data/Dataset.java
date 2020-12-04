@@ -42,9 +42,11 @@ public class Dataset {
         return this.getColumn(this.getHeaderColumn(col));
     }
 
-    private int getHeaderColumn(String col){
+    public int getHeaderColumn(String col){
         return this.headers.indexOf(col);
     }
+
+
 
 
 }
