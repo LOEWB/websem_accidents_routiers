@@ -7,6 +7,8 @@ import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionFactory;
 
 /**
  * Class inserting caracteristiques-2019.csv in the model
@@ -48,14 +50,18 @@ public class CaracInsertor extends AbstractInsertor {
                     accident.get(dataset.getHeaders().indexOf("dep")),
                     XSDDatatype.XSDdecimal);
 
-            model.write(System.out, "Turtle");
-
         });
+        model.write(System.out, "Turtle");
+        String datasetURL = "http://localhost:3030/test2";
+        String sparqlEndpoint = datasetURL + "/sparql";
+        String sparqlUpdate = datasetURL + "/update";
+        String graphStore = datasetURL + "/data";
+        RDFConnection conn = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
+        conn.load(model);
+        conn.update("INSERT DATA { <test> a <TestClass> }");
 
 
 
-
-        model.createProperty("a");
     }
 
 }
