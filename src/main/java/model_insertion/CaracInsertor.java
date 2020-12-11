@@ -21,6 +21,7 @@ public class CaracInsertor extends AbstractInsertor {
     private HashMap<Integer, String> lumDico = new HashMap<>();
     private HashMap<Integer, String> aggDico = new HashMap<>();
     private HashMap<Integer, String> intDico = new HashMap<>();
+    private HashMap<Integer, String> atmDico = new HashMap<>();
     private HashMap<Integer, String> colDico = new HashMap<>();
 
     public CaracInsertor(Parser parser, Model model) {
@@ -36,6 +37,12 @@ public class CaracInsertor extends AbstractInsertor {
         headersDico.put("dep", 6);
         headersDico.put("com", 7);
         headersDico.put("agg", 8);
+        headersDico.put("int", 9);
+        headersDico.put("atm", 10);
+        headersDico.put("col", 11);
+        headersDico.put("adr", 12);
+        headersDico.put("lat", 13);
+        headersDico.put("long", 14);
 
         lumDico.put(1, "Plein jour");
         lumDico.put(2, "Crépuscule ou aube");
@@ -64,6 +71,17 @@ public class CaracInsertor extends AbstractInsertor {
         colDico.put(5, "Trois véhicules et plus - collisions multiples");
         colDico.put(6, "Autre collision");
         colDico.put(7, "Sans collision");
+
+        atmDico.put(-1, "Non renseigné");
+        atmDico.put(1, "Normale");
+        atmDico.put(2, "Pluie légère");
+        atmDico.put(3, "Pluie forte");
+        atmDico.put(4, "Neige - grêle");
+        atmDico.put(5, "Brouillard - fumée");
+        atmDico.put(6, "Vent fort - tempête");
+        atmDico.put(7, "Temps éblouissant");
+        atmDico.put(8, "Temps couvert");
+        atmDico.put(9, "Autre");
     }
 
     public void insert() {
@@ -82,6 +100,12 @@ public class CaracInsertor extends AbstractInsertor {
             Property depProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
             Property commProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
             Property aggProp = model.createProperty("http://www.exemple.org/en_agglo_ou_hors_agglo");
+            Property intProp = model.createProperty("http://www.exemple.org/intersection");
+            Property atmProp = model.createProperty("http://www.exemple.org/conditions_atmo");
+            Property colProp = model.createProperty("http://www.exemple.org/type_collision");
+            Property adrProp = model.createProperty("http://www.exemple.org/adr_postale");
+            Property latProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+            Property longProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 
             accidentRoutierEvent.addProperty(aProp, accidentRoutier);
             accidentRoutierEvent.addProperty(dayProp,
@@ -95,7 +119,7 @@ public class CaracInsertor extends AbstractInsertor {
                     XSDDatatype.XSDtime);
             accidentRoutierEvent.addProperty(lightProp,
                     lumDico.get(Integer.valueOf(accident.get(headersDico.get("lum")))),
-                    XSDDatatype.XSDdecimal);
+                    XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(depProp,
                     accident.get(headersDico.get("dep")),
                     XSDDatatype.XSDdecimal);
@@ -105,17 +129,43 @@ public class CaracInsertor extends AbstractInsertor {
             accidentRoutierEvent.addProperty(aggProp,
                     aggDico.get(Integer.valueOf(accident.get(headersDico.get("agg")))),
                     XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(intProp,
+                    intDico.get(Integer.valueOf(accident.get(headersDico.get("int")))),
+                    XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(atmProp,
+                    atmDico.get(Integer.valueOf(accident.get(headersDico.get("atm")).trim())),
+                    XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(colProp,
+                    colDico.get(Integer.valueOf(accident.get(headersDico.get("col")).trim())),
+                    XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(adrProp,
+                    accident.get(headersDico.get("adr")),
+                    XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(latProp,
+                    accident.get(headersDico.get("lat")),
+                    XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(longProp,
+                    accident.get(headersDico.get("long")),
+                    XSDDatatype.XSDstring);
+
 
         });
 
+//        insertData(model);
+
         model.write(System.out, "Turtle");
-//        String datasetURL = "http://localhost:3030/test2";
-//        String sparqlEndpoint = datasetURL + "/sparql";
-//        String sparqlUpdate = datasetURL + "/update";
-//        String graphStore = datasetURL + "/data";
-//        RDFConnection conn = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
-//        conn.load(model);
-//        conn.update("INSERT DATA { <test> a <TestClass> }");
+
+    }
+
+    public static void insertData(Model model) {
+        String datasetURL = "http://localhost:3030/accidents_routiers";
+        String sparqlEndpoint = datasetURL + "/sparql";
+        String sparqlUpdate = datasetURL + "/update";
+        String graphStore = datasetURL + "/data";
+        RDFConnection conneg = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
+        conneg.load(model); // add the content of model to the triplestore
+        conneg.update("INSERT DATA { <test> a <TestClass> }"); // add the triple to the triplestore
+
     }
 
 }
