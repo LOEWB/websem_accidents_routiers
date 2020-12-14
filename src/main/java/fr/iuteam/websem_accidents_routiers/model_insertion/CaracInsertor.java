@@ -3,7 +3,6 @@ package fr.iuteam.websem_accidents_routiers.model_insertion;
 import fr.iuteam.websem_accidents_routiers.data.Dataset;
 import fr.iuteam.websem_accidents_routiers.data.Parser;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -11,18 +10,21 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Class inserting caracteristiques-2019.csv in the model
  */
 public class CaracInsertor extends AbstractInsertor {
 
-    private HashMap<String, Integer> headersDico = new HashMap<>();
-    private HashMap<Integer, String> lumDico = new HashMap<>();
-    private HashMap<Integer, String> aggDico = new HashMap<>();
-    private HashMap<Integer, String> intDico = new HashMap<>();
-    private HashMap<Integer, String> atmDico = new HashMap<>();
-    private HashMap<Integer, String> colDico = new HashMap<>();
+    private Map<String, Integer> headersDico = new HashMap<>();
+    private Map<Integer, String> lumDico = new HashMap<>();
+    private Map<Integer, String> aggDico = new HashMap<>();
+    private Map<Integer, String> intDico = new HashMap<>();
+    private Map<Integer, String> atmDico = new HashMap<>();
+    private Map<Integer, String> colDico = new HashMap<>();
 
     public CaracInsertor(Parser parser, Model model) {
         super(parser, model);
@@ -30,58 +32,38 @@ public class CaracInsertor extends AbstractInsertor {
     }
 
     void initDicos() {
-        headersDico.put("jour", 1);
-        headersDico.put("mois", 2);
-        headersDico.put("hrmn", 4);
-        headersDico.put("lum", 5);
-        headersDico.put("dep", 6);
-        headersDico.put("com", 7);
-        headersDico.put("agg", 8);
-        headersDico.put("int", 9);
-        headersDico.put("atm", 10);
-        headersDico.put("col", 11);
-        headersDico.put("adr", 12);
-        headersDico.put("lat", 13);
-        headersDico.put("long", 14);
+        this.headersDico = Stream.of(new Object[][] {
+                {"jour",1}, {"mois",2}, {"hrmn", 4}, {"lum", 5}, {"dep",6},
+                {"com",7},{"agg",8}, {"int",9},{ "atm",10},{"col",11},
+                {"adr",12},{ "lat",13},{ "long",14}
+        }).collect(Collectors.toMap(data -> (String) data[0], data -> (Integer) data[1]));
 
-        lumDico.put(1, "Plein jour");
-        lumDico.put(2, "Crépuscule ou aube");
-        lumDico.put(3, "Nuit sans éclairage");
-        lumDico.put(4, "Nuit avec éclairage public non allumé");
-        lumDico.put(5, "Nuit avec éclairage public allumé");
+        this.lumDico = Stream.of(new Object[][] {
+                {1, "Plein jour"}, {2, "Crépuscule ou aube"}, {3, "Nuit sans éclairage"},
+                {4, "Nuit avec éclairage public non allumé"}, {5, "Nuit avec éclairage public allumé"}
+        }).collect(Collectors.toMap(data -> (Integer) data[0], data -> (String) data[1]));
 
-        aggDico.put(1, "Hors agglomération");
-        aggDico.put(2, "En agglomération");
+        this.aggDico.put(1, "Hors agglomération");
+        this.aggDico.put(2, "En agglomération");
 
-        intDico.put(1, "Hors intersection");
-        intDico.put(2, "Intersection en X");
-        intDico.put(3, "Intersection en T");
-        intDico.put(4, "Intersection en Y");
-        intDico.put(5, "Intersection à plus de 4 branches");
-        intDico.put(6, "Giratoire");
-        intDico.put(7, "Place");
-        intDico.put(8, "Passage à niveau");
-        intDico.put(9, "Autre intersection");
+        this.intDico = Stream.of(new Object[][] {
+                {1,  "Hors intersection"}, {2, "Intersection en X"}, {3,"Intersection en T"},
+                {4, "Intersection en Y"}, {5, "Intersection à plus de 4 branches"},
+                {6, "Giratoire"},{7, "Place"}, {8, "Passage à niveau"},{9, "Autre intersection"}
+        }).collect(Collectors.toMap(data -> (Integer) data[0], data -> (String) data[1]));
 
-        colDico.put(-1, "Non renseigné");
-        colDico.put(1, "Deux véhicules - frontale");
-        colDico.put(2, "Deux véhicules - par l'arrière");
-        colDico.put(3, "Deux véhicules - par le côté");
-        colDico.put(4, "Trois véhicules et plus - en chaîne");
-        colDico.put(5, "Trois véhicules et plus - collisions multiples");
-        colDico.put(6, "Autre collision");
-        colDico.put(7, "Sans collision");
 
-        atmDico.put(-1, "Non renseigné");
-        atmDico.put(1, "Normale");
-        atmDico.put(2, "Pluie légère");
-        atmDico.put(3, "Pluie forte");
-        atmDico.put(4, "Neige - grêle");
-        atmDico.put(5, "Brouillard - fumée");
-        atmDico.put(6, "Vent fort - tempête");
-        atmDico.put(7, "Temps éblouissant");
-        atmDico.put(8, "Temps couvert");
-        atmDico.put(9, "Autre");
+        this.colDico = Stream.of(new Object[][]{
+            {-1, "Non renseigné"}, {1, "Deux véhicules - frontale"}, {2, "Deux véhicules - par l'arrière"},
+            {3, "Deux véhicules - par le côté"}, {4, "Trois véhicules et plus - en chaîne"},
+            {5, "Trois véhicules et plus - collisions multiples"}, {6, "Autre collision"}, {7, "Sans collision"}
+        }).collect(Collectors.toMap(data -> (Integer) data[0], data -> (String) data[1]));
+
+        this.atmDico =  Stream.of(new Object[][]{
+                {-1, "Non renseigné"}, {1, "Normale"}, {2, "Pluie légère"}, {3, "Pluie forte"}, {4, "Neige - grêle"},
+                {5, "Brouillard - fumée"}, {6, "Vent fort - tempête"}, {7, "Temps éblouissant"},
+                {8, "Temps couvert"}, {9, "Autre"}
+        }).collect(Collectors.toMap(data -> (Integer) data[0], data -> (String) data[1]));
     }
 
     public void insert() {
@@ -150,7 +132,7 @@ public class CaracInsertor extends AbstractInsertor {
 
 
         });
-//        insertData(model);
+        insertData(model);
         model.write(System.out, "Turtle");
     }
 
