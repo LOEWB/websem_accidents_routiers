@@ -119,7 +119,7 @@ public class QueryBuild {
 
 
     private String getFormattedWhereAndFilter(){
-        String wf = "";
+        /*String wf = "";
         if(this.getFormattedWhere()!=null){
             wf += this.getFormattedWhere();
             if(this.getFormattedFilter()!=null){
@@ -127,8 +127,15 @@ public class QueryBuild {
             }
             return wf;
         }
-        return null;
-
+        return null;*/
+        String wf = "";
+        if(this.getFormattedWhere()!=null){
+            wf += this.getFormattedWhere();
+        }
+        if(this.getFormattedFilter()!=null){
+            wf+= " FILTER ( " +this.getFormattedFilter() + ")";
+        }
+        return wf;
     }
 
     private String getFormattedOrderBy(){
@@ -170,7 +177,7 @@ public class QueryBuild {
     @Override
     public String toString() {
         String pattern = "SELECT " + this.getFormattedSelect();
-        if(this.getFormattedWhereAndFilter()!=null) pattern += " WHERE {" + this.getFormattedWhereAndFilter() + "}";
+        pattern += " WHERE {" + this.getFormattedWhereAndFilter() + "}";
         if(this.getFormattedGroupBy()!=null) pattern += " GROUP BY " + this.getFormattedGroupBy();
         if(this.getFormattedHaving()!=null) pattern += " HAVING (" + this.getFormattedHaving() + ")";
         if(this.getFormattedOrderBy()!=null) pattern += " ORDER BY " + this.getFormattedOrderBy();
