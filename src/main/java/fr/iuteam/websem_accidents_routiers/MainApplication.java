@@ -22,7 +22,7 @@ public class MainApplication {
 
     public static void main(String[] args) throws IOException {
 
-        ClassLoader classLoader = MainApplication.class.getClassLoader();
+        /*ClassLoader classLoader = MainApplication.class.getClassLoader();
         URL url = classLoader.getResource("caracteristiques-2019.csv");
         assert url != null: "Lien du fichier introuvable";
         Parser p = new Parser(url.getPath());
@@ -30,7 +30,8 @@ public class MainApplication {
 
         Model model = ModelFactory.createDefaultModel();
         CaracInsertor caracInsertor = new CaracInsertor(p, model);
-        caracInsertor.insert();
+        caracInsertor.insert();*/
+
 
     }
 
