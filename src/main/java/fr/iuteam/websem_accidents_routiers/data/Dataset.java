@@ -1,4 +1,4 @@
-package data;
+package fr.iuteam.websem_accidents_routiers.data;
 
 import java.util.ArrayList;
 import java.util.List;

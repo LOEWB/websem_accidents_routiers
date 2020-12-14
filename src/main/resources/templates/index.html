@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/layout" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <form method="post" class="col-sm" style="border: 1px solid black" th:action="@{/test}">
+            <div class="form-group">
+                <label for="acc">Numéros d'accident</label>
+                <input type="text" class="form-control" id="acc" placeholder="201900015653">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <form method="post" class="col-sm" style="border: 1px solid black" th:action="@{/test2}">
+            <div class="form-group">
+                <label for="date">Date de l'accident</label>
+                <input type="date" class="form-control" id="date">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,5 +1,8 @@
-import data.Parser;
-import model_insertion.CaracInsertor;
+package fr.iuteam.websem_accidents_routiers;
+
+
+import fr.iuteam.websem_accidents_routiers.data.Parser;
+import fr.iuteam.websem_accidents_routiers.model_insertion.CaracInsertor;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;

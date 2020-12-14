@@ -1,7 +1,7 @@
-package model_insertion;
+package fr.iuteam.websem_accidents_routiers.model_insertion;
 
-import data.Dataset;
-import data.Parser;
+import fr.iuteam.websem_accidents_routiers.data.Dataset;
+import fr.iuteam.websem_accidents_routiers.data.Parser;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Model;
@@ -150,11 +150,8 @@ public class CaracInsertor extends AbstractInsertor {
 
 
         });
-
 //        insertData(model);
-
         model.write(System.out, "Turtle");
-
     }
 
     public static void insertData(Model model) {
@@ -165,6 +162,14 @@ public class CaracInsertor extends AbstractInsertor {
         RDFConnection conneg = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
         conneg.load(model); // add the content of model to the triplestore
         conneg.update("INSERT DATA { <test> a <TestClass> }"); // add the triple to the triplestore
+
+        /*String datasetURL = "http://localhost:3030/test2";
+        String sparqlEndpoint = datasetURL + "/sparql";
+        String sparqlUpdate = datasetURL + "/update";
+        String graphStore = datasetURL + "/data";
+        RDFConnection conn = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
+        conn.load(model);
+        conn.update("INSERT DATA { <test> a <TestClass> }");*/
 
     }
 

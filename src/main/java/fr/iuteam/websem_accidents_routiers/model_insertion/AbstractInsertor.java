@@ -1,7 +1,7 @@
-package model_insertion;
+package fr.iuteam.websem_accidents_routiers.model_insertion;
 
-import data.Dataset;
-import data.Parser;
+
+import fr.iuteam.websem_accidents_routiers.data.Parser;
 import org.apache.jena.rdf.model.Model;
 
 public abstract class AbstractInsertor {
