@@ -2,13 +2,18 @@ package fr.iuteam.websem_accidents_routiers.model_insertion;
 
 import fr.iuteam.websem_accidents_routiers.data.Dataset;
 import fr.iuteam.websem_accidents_routiers.data.Parser;
+import fr.iuteam.websem_accidents_routiers.sparql.SparqlConn;
+import fr.iuteam.websem_accidents_routiers.sparql.SparqlException;
+import lombok.Data;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +22,7 @@ import java.util.stream.Stream;
 /**
  * Class inserting caracteristiques-2019.csv in the model
  */
+@Data
 public class CaracInsertor extends AbstractInsertor {
 
     private Map<String, Integer> headersDico = new HashMap<>();
@@ -28,6 +34,10 @@ public class CaracInsertor extends AbstractInsertor {
 
     public CaracInsertor(Parser parser, Model model) {
         super(parser, model);
+        initDicos();
+    }
+    public CaracInsertor(){
+        super();
         initDicos();
     }
 
@@ -66,7 +76,7 @@ public class CaracInsertor extends AbstractInsertor {
         }).collect(Collectors.toMap(data -> (Integer) data[0], data -> (String) data[1]));
     }
 
-    public void insert() {
+    public void insert() throws ParseException, SparqlException, IOException {
         Dataset dataset = parser.getDataset();
 
         dataset.getData().forEach(accident -> {
@@ -90,60 +100,28 @@ public class CaracInsertor extends AbstractInsertor {
             Property longProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 
             accidentRoutierEvent.addProperty(aProp, accidentRoutier);
-            accidentRoutierEvent.addProperty(dayProp,
-                    accident.get(headersDico.get("jour")),
-                    XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(monthProp,
-                    accident.get(headersDico.get("mois")),
-                    XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(timeProp,
-                    accident.get(headersDico.get("hrmn")),
-                    XSDDatatype.XSDtime);
-            accidentRoutierEvent.addProperty(lightProp,
-                    lumDico.get(Integer.valueOf(accident.get(headersDico.get("lum")))),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(depProp,
-                    accident.get(headersDico.get("dep")),
-                    XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(commProp,
-                    accident.get(headersDico.get("com")),
-                    XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(aggProp,
-                    aggDico.get(Integer.valueOf(accident.get(headersDico.get("agg")))),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(intProp,
-                    intDico.get(Integer.valueOf(accident.get(headersDico.get("int")))),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(atmProp,
-                    atmDico.get(Integer.valueOf(accident.get(headersDico.get("atm")).trim())),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(colProp,
-                    colDico.get(Integer.valueOf(accident.get(headersDico.get("col")).trim())),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(adrProp,
-                    accident.get(headersDico.get("adr")),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(latProp,
-                    accident.get(headersDico.get("lat")),
-                    XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(longProp,
-                    accident.get(headersDico.get("long")),
-                    XSDDatatype.XSDstring);
-
-
+            accidentRoutierEvent.addProperty(dayProp, accident.get(headersDico.get("jour")), XSDDatatype.XSDdecimal);
+            accidentRoutierEvent.addProperty(monthProp, accident.get(headersDico.get("mois")), XSDDatatype.XSDdecimal);
+            accidentRoutierEvent.addProperty(timeProp, accident.get(headersDico.get("hrmn")), XSDDatatype.XSDtime);
+            accidentRoutierEvent.addProperty(lightProp, lumDico.get(Integer.valueOf(accident.get(headersDico.get("lum")))), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(depProp, accident.get(headersDico.get("dep")), XSDDatatype.XSDdecimal);
+            accidentRoutierEvent.addProperty(commProp, accident.get(headersDico.get("com")), XSDDatatype.XSDdecimal);
+            accidentRoutierEvent.addProperty(aggProp, aggDico.get(Integer.valueOf(accident.get(headersDico.get("agg")))), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(intProp, intDico.get(Integer.valueOf(accident.get(headersDico.get("int")))), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(atmProp, atmDico.get(Integer.valueOf(accident.get(headersDico.get("atm")).trim())), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(colProp, colDico.get(Integer.valueOf(accident.get(headersDico.get("col")).trim())), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(adrProp, accident.get(headersDico.get("adr")), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(latProp, accident.get(headersDico.get("lat")), XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(longProp, accident.get(headersDico.get("long")), XSDDatatype.XSDstring);
         });
         insertData(model);
-        model.write(System.out, "Turtle");
+        //model.write(System.out, "Turtle");
     }
 
-    public static void insertData(Model model) {
-        String datasetURL = "http://localhost:3030/accidents_routiers";
-        String sparqlEndpoint = datasetURL + "/sparql";
-        String sparqlUpdate = datasetURL + "/update";
-        String graphStore = datasetURL + "/data";
-        RDFConnection conneg = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
-        conneg.load(model); // add the content of model to the triplestore
-        conneg.update("INSERT DATA { <test> a <TestClass> }"); // add the triple to the triplestore
+    public static void insertData(Model model) throws ParseException, SparqlException, IOException {
+        RDFConnection conn = SparqlConn.getInstance().getConn();
+        conn.load(model); // add the content of model to the triplestore
+        conn.update("INSERT DATA { <test> a <TestClass> }"); // add the triple to the triplestore
 
         /*String datasetURL = "http://localhost:3030/test2";
         String sparqlEndpoint = datasetURL + "/sparql";
