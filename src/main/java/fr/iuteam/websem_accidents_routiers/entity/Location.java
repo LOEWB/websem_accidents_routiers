@@ -20,4 +20,7 @@ public class Location {
         this.postCode = postCode;
 
     }
+    public Location(){
+        
+    }
 }

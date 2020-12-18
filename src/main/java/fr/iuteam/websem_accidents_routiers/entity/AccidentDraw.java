@@ -21,4 +21,5 @@ public class AccidentDraw {
     private String col;
     @JsonldProperty("http://www.example.org/inter")
     private String inter ;
+    private LocationDraw location =new LocationDraw();
 }

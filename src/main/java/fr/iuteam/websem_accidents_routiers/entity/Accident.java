@@ -26,6 +26,7 @@ public class Accident {
     private String adrPost;
     private Long lat;
     private Long lon;
+    private Location location = new Location();
 
     public QueryBuild QbFilterList(QueryBuild build, List<Integer> list, String predicate, Map<Integer,String> map, String val) throws QueryBuilderException {
         if(!list.isEmpty()){

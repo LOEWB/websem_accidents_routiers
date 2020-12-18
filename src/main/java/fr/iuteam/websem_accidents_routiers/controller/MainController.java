@@ -35,6 +35,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 
 @Controller
 @RequestMapping("/")
@@ -53,15 +55,15 @@ public class MainController {
 
             QueryBuild build = new QueryBuild();
 
-            build.select("?subjectAccident", "?lum","?vlum","?atm", "?vatm", "?agg", "?vagg","?col", "?vcol", "?i","?int")
+            build.select("?subjectAccident", "?lum", "?atm","?agg","?col", "?int","?com", "?pc")
                     .where("?subjectAccident <http://www.example.org/location> ?subjectLocation")
-                    .where("?subjectLocation <http://www.example.org/commune/> ?locationObject")
-
+                    .where("?subjectLocation <http://www.example.org/commune/> ?com")
                     .where("?subjectAccident <http://www.example.org/lumiere> ?lum")
-                    .where("?subjectAccident <http://www.example.org/en_agglo_ou_hors_agglo> ?atm")
-                    .where("?subjectAccident <http://www.example.org/lumiere> ?agg")
+                    .where("?subjectAccident <http://www.example.org/conditions_atmo> ?atm")
+                    .where("?subjectAccident <http://www.example.org/en_agglo_ou_hors_agglo> ?agg")
                     .where("?subjectAccident <http://www.example.org/type_collision> ?col")
-                    .where("?subjectAccident <http://www.example.org/intersection> ?int");
+                    .where("?subjectAccident <http://www.example.org/intersection> ?int")
+                    ;
 
             if(!accident.getLuminosity().isEmpty()){
                 if(!build.isFilterEmptyOrNull())
@@ -88,6 +90,12 @@ public class MainController {
                     build.and();
                 accident.Qb2FilterList(build,accident.getIntersection(),caracInsertor.getIntDico(), "?int");
             }
+            if(accident.getLocation().getCity()!=null && !accident.getLocation().getCity().isEmpty() ){
+                if(!build.isFilterEmptyOrNull()){
+                    build.and();
+                }
+                build.filter("?com =\""+accident.getLocation().getCity() + "\"");
+            }
 
             build.limit(150);
             System.out.println(build);
@@ -111,6 +119,7 @@ public class MainController {
                 acc.setAgg(qs.getLiteral("agg").toString()) ;
                 acc.setCol(qs.getLiteral("col").toString()) ;
                 acc.setInter(qs.getLiteral("int").toString());
+                acc.getLocation().setCity(qs.getLiteral("com").toString());
                 //System.out.println(qs.getLiteral("vinter").getValue().toString());
                 //acc.setInter() ;
                 lacc.add(acc);
