@@ -2,6 +2,7 @@ package fr.iuteam.websem_accidents_routiers.model_insertion;
 
 import fr.iuteam.websem_accidents_routiers.data.Dataset;
 import fr.iuteam.websem_accidents_routiers.data.Parser;
+import fr.iuteam.websem_accidents_routiers.entity.Location;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlConn;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlException;
 import lombok.Data;
@@ -10,12 +11,13 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,7 +81,12 @@ public class CaracInsertor extends AbstractInsertor {
     public void insert() throws ParseException, SparqlException, IOException {
         Dataset dataset = parser.getDataset();
 
-        dataset.getData().forEach(accident -> {
+        int datasetSize = dataset.getData().size();
+        int maxNumber = 50;
+
+        for(int i = 0; i < maxNumber; i++) {
+
+            List<String> accident = dataset.getData().get(i);
             Resource accidentRoutierEvent = model.createResource("http://example.org/" + accident.get(dataset.getHeaders().indexOf("Num_Acc")));
             Resource accidentRoutier = model.createResource("http://example.org/accident_de_la_route");
 
@@ -99,23 +106,61 @@ public class CaracInsertor extends AbstractInsertor {
             Property latProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
             Property longProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 
+            String lat = accident.get(headersDico.get("lat"));
+            String lon = accident.get(headersDico.get("long"));
+            String comCode = accident.get(headersDico.get("com"));
+
             accidentRoutierEvent.addProperty(aProp, accidentRoutier);
             accidentRoutierEvent.addProperty(dayProp, accident.get(headersDico.get("jour")), XSDDatatype.XSDdecimal);
             accidentRoutierEvent.addProperty(monthProp, accident.get(headersDico.get("mois")), XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(timeProp, accident.get(headersDico.get("hrmn")), XSDDatatype.XSDtime);
+            accidentRoutierEvent.addProperty(timeProp, accident.get(headersDico.get("hrmn")), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(lightProp, lumDico.get(Integer.valueOf(accident.get(headersDico.get("lum")))), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(depProp, accident.get(headersDico.get("dep")), XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(commProp, accident.get(headersDico.get("com")), XSDDatatype.XSDdecimal);
+            accidentRoutierEvent.addProperty(commProp, comCode, XSDDatatype.XSDdecimal);
             accidentRoutierEvent.addProperty(aggProp, aggDico.get(Integer.valueOf(accident.get(headersDico.get("agg")))), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(intProp, intDico.get(Integer.valueOf(accident.get(headersDico.get("int")))), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(atmProp, atmDico.get(Integer.valueOf(accident.get(headersDico.get("atm")).trim())), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(colProp, colDico.get(Integer.valueOf(accident.get(headersDico.get("col")).trim())), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(adrProp, accident.get(headersDico.get("adr")), XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(latProp, accident.get(headersDico.get("lat")), XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(longProp, accident.get(headersDico.get("long")), XSDDatatype.XSDstring);
-        });
+            accidentRoutierEvent.addProperty(latProp, lat, XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(longProp, lon, XSDDatatype.XSDstring);
+
+
+            insertLocation(model, i, comCode, lon, lat);
+        }
+
         insertData(model);
-        //model.write(System.out, "Turtle");
+//        model.write(System.out, "Turtle");
+    }
+
+    private void insertLocation(Model model, int locNumber, String comCode, String lon, String lat) {
+
+        LocationFetching locationFetching = new LocationFetching();
+        try {
+            Location loc = locationFetching.fetchByLongLat(lon, lat);
+
+            Resource locationInstance = model.createResource("http://example.org/location/" + locNumber);
+            Property commProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
+            Property cityProp = model.createProperty("http://example.org/commune/");
+            Property addressProp = model.createProperty("http://example.org/adresse/");
+            Property postCodeProp = model.createProperty("http://example.org/code_postal/");
+
+            Resource location = model.createResource("http://example.org/location");
+
+
+            Property aProp = model.createProperty("a");
+
+
+            locationInstance.addProperty(aProp, location);
+            locationInstance.addProperty(commProp, comCode, XSDDatatype.XSDstring);
+            if(loc != null) {
+                locationInstance.addProperty(cityProp, loc.getCity(), XSDDatatype.XSDstring);
+                locationInstance.addProperty(addressProp, loc.getAddress(), XSDDatatype.XSDstring);
+                locationInstance.addProperty(postCodeProp, loc.getPostCode(), XSDDatatype.XSDstring);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void insertData(Model model) throws ParseException, SparqlException, IOException {
