@@ -92,17 +92,17 @@ public class CaracInsertor extends AbstractInsertor {
 
             Property aProp = model.createProperty("a");
 //            Property dayProp = model.createProperty("https://www.wikidata.org/wiki/Property:P837");
-            Property dayProp = model.createProperty("http://www.exemple.org/jour_du_mois");
-            Property monthProp = model.createProperty("http://www.exemple.org/mois");
-            Property timeProp = model.createProperty("http://www.exemple.org/heure");
-            Property lightProp = model.createProperty("http://www.exemple.org/lumiere");
+            Property dayProp = model.createProperty("http://www.example.org/jour_du_mois");
+            Property monthProp = model.createProperty("http://www.example.org/mois");
+            Property timeProp = model.createProperty("http://www.example.org/heure");
+            Property lightProp = model.createProperty("http://www.example.org/lumiere");
             Property depProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
             Property commProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
-            Property aggProp = model.createProperty("http://www.exemple.org/en_agglo_ou_hors_agglo");
-            Property intProp = model.createProperty("http://www.exemple.org/intersection");
-            Property atmProp = model.createProperty("http://www.exemple.org/conditions_atmo");
-            Property colProp = model.createProperty("http://www.exemple.org/type_collision");
-            Property adrProp = model.createProperty("http://www.exemple.org/adr_postale");
+            Property aggProp = model.createProperty("http://www.example.org/en_agglo_ou_hors_agglo");
+            Property intProp = model.createProperty("http://www.example.org/intersection");
+            Property atmProp = model.createProperty("http://www.example.org/conditions_atmo");
+            Property colProp = model.createProperty("http://www.example.org/type_collision");
+            Property adrProp = model.createProperty("http://www.example.org/adr_postale");
             Property latProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
             Property longProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
             Property locationIdProp = model.createProperty("http://example.org/location");
@@ -126,14 +126,16 @@ public class CaracInsertor extends AbstractInsertor {
             accidentRoutierEvent.addProperty(adrProp, accident.get(headersDico.get("adr")), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(latProp, lat, XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(longProp, lon, XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(locationIdProp, "http://example.org/location/" + i, XSDDatatype.XSDstring);
+//            accidentRoutierEvent.addProperty(locationIdProp, "http://example.org/location/" + i, XSDDatatype.XSDstring);
 
+            Resource accidentLocation = model.createResource("http://example.org/location/" + i);
+            accidentRoutierEvent.addProperty(locationIdProp, accidentLocation);
 
             insertLocation(model, i, comCode, lon, lat);
         }
 
-//        insertData(model);
-        model.write(System.out, "Turtle");
+        insertData(model);
+//        model.write(System.out, "Turtle");
     }
 
     private void insertLocation(Model model, int locNumber, String comCode, String lon, String lat) {
