@@ -78,13 +78,20 @@ public class CaracInsertor extends AbstractInsertor {
         }).collect(Collectors.toMap(data -> (Integer) data[0], data -> (String) data[1]));
     }
 
+
     public void insert() throws ParseException, SparqlException, IOException {
         Dataset dataset = parser.getDataset();
+        this.insert(dataset.getData().size());
+    }
 
+    public void insert(int max) throws ParseException, SparqlException, IOException {
+        Dataset dataset = parser.getDataset();
+        if(max >  dataset.getData().size() )
+            max =  dataset.getData().size();
         int datasetSize = dataset.getData().size();
         int maxNumber = 100;
 
-        for(int i = 0; i < maxNumber; i++) {
+        for(int i = 0; i < max; i++) {
 
             List<String> accident = dataset.getData().get(i);
             Resource accidentRoutierEvent = model.createResource("http://www.example.org/" + accident.get(dataset.getHeaders().indexOf("Num_Acc")));

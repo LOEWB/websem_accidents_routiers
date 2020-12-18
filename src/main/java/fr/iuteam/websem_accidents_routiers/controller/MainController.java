@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fr.iuteam.websem_accidents_routiers.InsertData;
+import fr.iuteam.websem_accidents_routiers.data.Parser;
 import fr.iuteam.websem_accidents_routiers.entity.Accident;
 import fr.iuteam.websem_accidents_routiers.entity.AccidentDraw;
 import fr.iuteam.websem_accidents_routiers.entity.AccidentIn;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.print.Pageable;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,6 +139,7 @@ public class MainController {
         }
         return "/index";
     }
+
 
 
     @GetMapping("/all")
