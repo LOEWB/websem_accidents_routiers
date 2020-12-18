@@ -62,6 +62,32 @@
     </div>
 </div>
 
+<div class="table-responsive">
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Luminosité</th>
+            <th scope="col">Météo</th>
+            <th scope="col">Type d'intersection</th>
+            <th scope="col">Nombre de colisions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${lacc}!=null" th:each="acc: ${lacc}">
+            <th scope="row" th:text="${acc.id}"></th>
+            <td th:text="${acc.lum}"></td>
+            <td th:text="${acc.atm}"></td>
+            <td th:text="${acc.inter}"></td>
+            <td th:text="${acc.col}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+</script>
 
 </body>
 </html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert Sparql</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<body>
+<div class="container jumbotron vertical-center mt-5">
+    <h2 class="card-title">Ajouter un nouvel accident</h2>
+    <form method="post" th:action="@{/insert}" th:object="${accident}">
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Identifiant de l'accident</label>
+                <input type="text" class="form-control" required th:field="*{id}">
+            </div>
+            <div class="form-group col-sm">
+                <label>Date de l'accident</label>
+                <input type="date" class="form-control" required  th:field="*{date}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Code Commune</label>
+                <input type="text" class="form-control" required th:field="*{com}">
+            </div>
+            <div class="form-group col-sm">
+                <label>Département</label>
+                <input type="text" class="form-control" required th:field="*{dep}">
+            </div>
+
+            <div class="form-group col-sm">
+                <label>Zone de l'accident</label>
+                <select class=form-control th:field="*{agg}" required>
+                    <option th:each="l : ${agg}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Adresse</label>
+                <input type="text" class="form-control" required  th:field="*{date}">
+            </div>
+            <div class="form-group col-sm">
+                <label>Ville</label>
+                <input type="text" class="form-control" required  th:field="*{city}">
+            </div>
+            <div class="form-group col-sm">
+                <label>Code Postal</label>
+                <input type="text" class="form-control" required  th:field="*{cp}">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Luminosité</label>
+                <select class=form-control th:field="*{luminosity}" required>
+                    <option th:each="l : ${lum}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                </select>
+            </div>
+            <div class="form-group col-sm">
+                <label>Météo</label>
+                <select class=form-control th:field="*{atm}" required>
+                    <option th:each="l : ${atm}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Type d'intersection</label>
+                <select class=form-control th:field="*{inter}" required>
+                    <option th:each="l : ${inter}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Nombre de colisions</label>
+                <select class=form-control th:field="*{col}" required>
+                    <option th:each="l : ${col}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+</body>
+</html>

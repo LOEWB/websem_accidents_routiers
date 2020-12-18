@@ -102,7 +102,7 @@ public class CaracInsertor extends AbstractInsertor {
             accidentRoutierEvent.addProperty(aProp, accidentRoutier);
             accidentRoutierEvent.addProperty(dayProp, accident.get(headersDico.get("jour")), XSDDatatype.XSDdecimal);
             accidentRoutierEvent.addProperty(monthProp, accident.get(headersDico.get("mois")), XSDDatatype.XSDdecimal);
-            accidentRoutierEvent.addProperty(timeProp, accident.get(headersDico.get("hrmn")), XSDDatatype.XSDtime);
+            accidentRoutierEvent.addProperty(timeProp, accident.get(headersDico.get("hrmn")), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(lightProp, lumDico.get(Integer.valueOf(accident.get(headersDico.get("lum")))), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(depProp, accident.get(headersDico.get("dep")), XSDDatatype.XSDdecimal);
             accidentRoutierEvent.addProperty(commProp, accident.get(headersDico.get("com")), XSDDatatype.XSDdecimal);
