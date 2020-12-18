@@ -19,7 +19,7 @@ public class QueryBuild {
         if(this.select== null){
             this.select = new ArrayList<>();
         }
-        this.select =  Arrays.asList(field);
+        this.select.addAll(Arrays.asList(field));
         return this;
     }
 
