@@ -35,14 +35,14 @@
             <div class="form-group col-sm">
                 <label>Zone de l'accident</label>
                 <select class=form-control th:field="*{agg}" required>
-                    <option th:each="l : ${agg}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                    <option th:each="l : ${agg}" th:value="${l.getValue()}" th:text="${l.getValue()}"></option>
                 </select>
             </div>
         </div>
         <div class="row">
             <div class="form-group col-sm">
                 <label>Adresse</label>
-                <input type="text" class="form-control" required  th:field="*{date}">
+                <input type="text" class="form-control" required  th:field="*{adr}">
             </div>
             <div class="form-group col-sm">
                 <label>Ville</label>
@@ -53,18 +53,28 @@
                 <input type="text" class="form-control" required  th:field="*{cp}">
             </div>
         </div>
+        <div class="row">
+            <div class="form-group col-sm">
+                <label>Latitude</label>
+                <input type="text" class="form-control" required  th:field="*{lat}">
+            </div>
+            <div class="form-group col-sm">
+                <label>Longitude</label>
+                <input type="text" class="form-control" required  th:field="*{lon}">
+            </div>
+        </div>
 
         <div class="row">
             <div class="form-group col-sm">
                 <label>Luminosité</label>
                 <select class=form-control th:field="*{luminosity}" required>
-                    <option th:each="l : ${lum}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                    <option th:each="l : ${lum}" th:value="${l.getValue()}" th:text="${l.getValue()}"></option>
                 </select>
             </div>
             <div class="form-group col-sm">
                 <label>Météo</label>
                 <select class=form-control th:field="*{atm}" required>
-                    <option th:each="l : ${atm}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                    <option th:each="l : ${atm}" th:value="${l.getValue()}" th:text="${l.getValue()}"></option>
                 </select>
             </div>
         </div>
@@ -72,7 +82,7 @@
             <div class="form-group col-sm">
                 <label>Type d'intersection</label>
                 <select class=form-control th:field="*{inter}" required>
-                    <option th:each="l : ${inter}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                    <option th:each="l : ${inter}" th:value="${l.getValue()}" th:text="${l.getValue()}"></option>
                 </select>
             </div>
         </div>
@@ -80,7 +90,7 @@
             <div class="form-group col-sm">
                 <label>Nombre de colisions</label>
                 <select class=form-control th:field="*{col}" required>
-                    <option th:each="l : ${col}" th:value="${l.getKey()}" th:text="${l.getValue()}"></option>
+                    <option th:each="l : ${col}" th:value="${l.getValue()}" th:text="${l.getValue()}"></option>
                 </select>
             </div>
         </div>

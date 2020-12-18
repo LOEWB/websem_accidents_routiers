@@ -23,5 +23,23 @@ public class AccidentIn {
     private String city;
     private String cp;
 
-
+    @Override
+    public String toString() {
+        return "AccidentIn{" +
+                "id='" + id + '\'' +
+                ", date=" + date +
+                ", luminosity='" + luminosity + '\'' +
+                ", dep='" + dep + '\'' +
+                ", com='" + com + '\'' +
+                ", agg='" + agg + '\'' +
+                ", inter='" + inter + '\'' +
+                ", atm='" + atm + '\'' +
+                ", col='" + col + '\'' +
+                ", adr='" + adr + '\'' +
+                ", lat='" + lat + '\'' +
+                ", lon='" + lon + '\'' +
+                ", city='" + city + '\'' +
+                ", cp='" + cp + '\'' +
+                '}';
+    }
 }

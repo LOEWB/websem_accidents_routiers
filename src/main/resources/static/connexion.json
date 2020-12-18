@@ -1,7 +1,7 @@
 {
   "url" : "http://localhost",
   "port" : 3030,
-  "dataset" : "test9",
+  "dataset" : "test11",
   "endPoint" : "sparql",
   "update" : "update",
   "graph" : "data"
