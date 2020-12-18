@@ -24,7 +24,6 @@ public class Insert {
         String id = UUID.randomUUID().toString();
         Resource accidentRoutierEvent = model.createResource("http://www.example.org/" + accident.getId());
         Resource accidentRoutier = model.createResource("http://www.example.org/accident_de_la_route");
-        Resource accidentLocation = model.createResource("http://www.example.org/location/" + id);
 
         Property aProp = model.createProperty("a");
         Property dayProp = model.createProperty("http://www.example.org/jour_du_mois");
@@ -61,32 +60,27 @@ public class Insert {
         accidentRoutierEvent.addProperty(adrProp, accident.getAdr(), XSDDatatype.XSDstring);
         accidentRoutierEvent.addProperty(latProp, lat, XSDDatatype.XSDstring);
         accidentRoutierEvent.addProperty(longProp, lon, XSDDatatype.XSDstring);
-        accidentRoutierEvent.addProperty(aProp, accidentLocation);
 
-        LocationFetching locationFetching = new LocationFetching();
-        try {
-            Location loc = locationFetching.fetchByLongLat(lon, lat);
-
-            Resource locationInstance = model.createResource("http://www.example.org/location/" + id);
-            Property commProp2 = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
-            Property cityProp = model.createProperty("http://www.example.org/commune/");
-            Property addressProp = model.createProperty("http://www.example.org/adresse/");
-            Property postCodeProp = model.createProperty("http://www.example.org/code_postal/");
-
-            Resource location = model.createResource("http://www.example.org/location");
+        Resource accidentLocation = model.createResource("http://www.example.org/location/" + id);
+        accidentRoutierEvent.addProperty(locationIdProp, accidentLocation);
 
 
+        Resource locationInstance = model.createResource("http://www.example.org/location/" + id);
+        Property commProp2 = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
+        Property cityProp = model.createProperty("http://www.example.org/commune/");
+        Property addressProp = model.createProperty("http://www.example.org/adresse/");
+        Property postCodeProp = model.createProperty("http://www.example.org/code_postal/");
 
-            locationInstance.addProperty(aProp, location);
-            locationInstance.addProperty(commProp2, comCode, XSDDatatype.XSDstring);
-            if(loc != null) {
-                locationInstance.addProperty(cityProp, loc.getCity(), XSDDatatype.XSDstring);
-                locationInstance.addProperty(addressProp, loc.getAddress(), XSDDatatype.XSDstring);
-                locationInstance.addProperty(postCodeProp, loc.getPostCode(), XSDDatatype.XSDstring);
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        Resource location = model.createResource("http://www.example.org/location");
+
+
+
+        locationInstance.addProperty(aProp, location);
+        locationInstance.addProperty(commProp2, comCode, XSDDatatype.XSDstring);
+
+        locationInstance.addProperty(cityProp, accident.getCity(), XSDDatatype.XSDstring);
+        locationInstance.addProperty(addressProp, accident.getAdr(), XSDDatatype.XSDstring);
+        locationInstance.addProperty(postCodeProp, accident.getCp(), XSDDatatype.XSDstring);
         model.write(System.out, "Turtle");
         RDFConnection conn = SparqlConn.getInstance().getConn();
         conn.load(model); // add the content of model to the triplestore
