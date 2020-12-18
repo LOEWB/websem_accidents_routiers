@@ -105,6 +105,8 @@ public class CaracInsertor extends AbstractInsertor {
             Property adrProp = model.createProperty("http://www.exemple.org/adr_postale");
             Property latProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
             Property longProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+            Property locationIdProp = model.createProperty("http://example.org/location");
+
 
             String lat = accident.get(headersDico.get("lat"));
             String lon = accident.get(headersDico.get("long"));
@@ -124,13 +126,14 @@ public class CaracInsertor extends AbstractInsertor {
             accidentRoutierEvent.addProperty(adrProp, accident.get(headersDico.get("adr")), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(latProp, lat, XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(longProp, lon, XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(locationIdProp, "http://example.org/location/" + i, XSDDatatype.XSDstring);
 
 
             insertLocation(model, i, comCode, lon, lat);
         }
 
-        insertData(model);
-//        model.write(System.out, "Turtle");
+//        insertData(model);
+        model.write(System.out, "Turtle");
     }
 
     private void insertLocation(Model model, int locNumber, String comCode, String lon, String lat) {
