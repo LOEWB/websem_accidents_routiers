@@ -1,5 +1,9 @@
 package fr.iuteam.websem_accidents_routiers.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.iuteam.websem_accidents_routiers.entity.Accident;
 import fr.iuteam.websem_accidents_routiers.entity.AccidentDraw;
 import fr.iuteam.websem_accidents_routiers.entity.AccidentIn;
@@ -10,10 +14,13 @@ import fr.iuteam.websem_accidents_routiers.sparql.SparqlConn;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlException;
 import fr.iuteam.websem_accidents_routiers.util.QueryBuild;
 import fr.iuteam.websem_accidents_routiers.util.QueryBuilderException;
+import ioinformarics.oss.jackson.module.jsonld.JsonldModule;
+import ioinformarics.oss.jackson.module.jsonld.JsonldResource;
 import org.apache.jena.atlas.json.JsonValue;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.json.simple.parser.ParseException;
@@ -24,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.print.Pageable;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +64,6 @@ public class MainController {
                 .filter("?col = <http://www.exemple.org/type_collision>").and()
                 .filter("?i = <http://www.exemple.org/intersection>").and()
                 .filter("?lum = <http://www.exemple.org/lumiere>");
-
             if(!accident.getLuminosity().isEmpty()){
                 build.and();
                 accident.Qb2FilterList(build,accident.getLuminosity(),caracInsertor.getLumDico(),"?vlum");
@@ -83,6 +90,7 @@ public class MainController {
             SparqlConn sparqlConn = SparqlConn.getInstance();
             RDFConnection conn = sparqlConn.getConn();
             QueryExecution query = conn.query(build.toString());
+
             ResultSet rs = query.execSelect() ;
             List<AccidentDraw> lacc = new ArrayList<>();
             while(rs.hasNext()) {
@@ -104,6 +112,12 @@ public class MainController {
             }
             m.addAttribute("lacc",lacc);
 
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            objectMapper.registerModule(new JsonldModule(() -> objectMapper.createObjectNode()));
+            String personJsonLd = objectMapper.writer().writeValueAsString(JsonldResource.Builder.create().build(lacc));
+            m.addAttribute("json", personJsonLd);
 
         }
         return "/index";
