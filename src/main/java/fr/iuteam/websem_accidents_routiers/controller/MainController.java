@@ -42,40 +42,43 @@ public class MainController {
         m.addAttribute("col", caracInsertor.getColDico());
         m.addAttribute("inter", caracInsertor.getIntDico());
         if(request.getMethod().equals("POST")){
+
             QueryBuild build = new QueryBuild();
-            build.select("?subject", "?lum","?vlum", "?value","?atm", "?vatm", "?agg", "?vagg","?col", "?vcol", "?i","?vi")
-                    .where("?subject ?lum ?vlum")
-                    .where("?subject ?atm ?vatm")
-                    .where("?subject ?agg ?vagg")
-                    .where("?subject ?col ?vcol")
-                    .where("?subject ?i ?vi");
 
+            build.select("?subjectAccident", "?lum","?vlum","?atm", "?vatm", "?agg", "?vagg","?col", "?vcol", "?i","?int")
+                    .where("?subjectAccident <http://example.org/location> ?subjectLocation")
+                    .where("?subjectLocation <http://example.org/commune/> ?locationObject")
 
-            build.filter("?atm = <http://www.exemple.org/conditions_atmo>").and()
-                .filter("?agg = <http://www.exemple.org/en_agglo_ou_hors_agglo>").and()
-                .filter("?col = <http://www.exemple.org/type_collision>").and()
-                .filter("?i = <http://www.exemple.org/intersection>").and()
-                .filter("?lum = <http://www.exemple.org/lumiere>");
+                    .where("?subjectAccident <http://www.example.org/lumiere> ?lum")
+                    .where("?subjectAccident <http://www.exemple.org/en_agglo_ou_hors_agglo> ?atm")
+                    .where("?subjectAccident <http://www.example.org/lumiere> ?agg")
+                    .where("?subjectAccident <http://www.exemple.org/type_collision> ?col")
+                    .where("?subjectAccident <http://www.exemple.org/intersection> ?int");
 
             if(!accident.getLuminosity().isEmpty()){
-                build.and();
-                accident.Qb2FilterList(build,accident.getLuminosity(),caracInsertor.getLumDico(),"?vlum");
+                if(!build.isFilterEmptyOrNull())
+                    build.and();
+                accident.Qb2FilterList(build,accident.getLuminosity(),caracInsertor.getLumDico(),"?lum");
             }
             if(!accident.getAtm().isEmpty()){
-                build.and();
-                accident.Qb2FilterList(build,accident.getAtm(),caracInsertor.getAtmDico(), "?vatm");
+                if(!build.isFilterEmptyOrNull())
+                    build.and();
+                accident.Qb2FilterList(build,accident.getAtm(),caracInsertor.getAtmDico(), "?atm");
             }
             if(!accident.getAgglo().isEmpty()){
-                build.and();
-                accident.Qb2FilterList(build,accident.getAgglo(),caracInsertor.getAggDico(), "?vagg");
+                if(!build.isFilterEmptyOrNull())
+                    build.and();
+                accident.Qb2FilterList(build,accident.getAgglo(),caracInsertor.getAggDico(), "?agg");
             }
             if(!accident.getNbCol().isEmpty()){
-                build.and();
-                accident.Qb2FilterList(build,accident.getNbCol(),caracInsertor.getColDico(), "?vcol");
+                if(!build.isFilterEmptyOrNull())
+                    build.and();
+                accident.Qb2FilterList(build,accident.getNbCol(),caracInsertor.getColDico(), "?col");
             }
             if(!accident.getIntersection().isEmpty()){
-                build.and();
-                accident.Qb2FilterList(build,accident.getIntersection(),caracInsertor.getIntDico(), "?vi");
+                if(!build.isFilterEmptyOrNull())
+                    build.and();
+                accident.Qb2FilterList(build,accident.getIntersection(),caracInsertor.getIntDico(), "?int");
             }
 
             build.limit(150);
@@ -85,6 +88,7 @@ public class MainController {
             QueryExecution query = conn.query(build.toString());
             ResultSet rs = query.execSelect() ;
             List<AccidentDraw> lacc = new ArrayList<>();
+
             while(rs.hasNext()) {
                 QuerySolution qs = rs.next() ;
                 AccidentDraw acc = new AccidentDraw();
@@ -92,12 +96,12 @@ public class MainController {
                 /*qs.getLiteral("vcol").getString();*/
                 //qs.getLiteral("vi").getString();
                // qs.getLiteral("vcol").getValue();
-                acc.setId(qs.getResource("subject").toString());
-                acc.setLum(qs.getLiteral("vlum").toString());
-                acc.setAtm(qs.getLiteral("vatm").toString()) ;
-                acc.setAgg(qs.getLiteral("vagg").toString()) ;
-                acc.setCol(qs.getLiteral("vcol").toString()) ;
-                acc.setInter(qs.getLiteral("vi").toString());
+                acc.setId(qs.getResource("subjectAccident").toString());
+                acc.setLum(qs.getLiteral("lum").toString());
+                acc.setAtm(qs.getLiteral("atm").toString()) ;
+                acc.setAgg(qs.getLiteral("agg").toString()) ;
+                acc.setCol(qs.getLiteral("col").toString()) ;
+                acc.setInter(qs.getLiteral("int").toString());
                 //System.out.println(qs.getLiteral("vinter").getValue().toString());
                 //acc.setInter() ;
                 lacc.add(acc);

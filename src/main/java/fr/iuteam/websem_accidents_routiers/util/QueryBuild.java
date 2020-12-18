@@ -186,4 +186,8 @@ public class QueryBuild {
         if(this.offset!=0) pattern += " OFFSET " + this.offset;
         return pattern;
     }
+
+    public Boolean isFilterEmptyOrNull() {
+        return this.filter == null || this.filter.isEmpty();
+    }
 }
