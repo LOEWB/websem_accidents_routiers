@@ -5,6 +5,7 @@ import fr.iuteam.websem_accidents_routiers.entity.AccidentDraw;
 import fr.iuteam.websem_accidents_routiers.entity.AccidentIn;
 import fr.iuteam.websem_accidents_routiers.entity.AllResource;
 import fr.iuteam.websem_accidents_routiers.model_insertion.CaracInsertor;
+import fr.iuteam.websem_accidents_routiers.model_insertion.Insert;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlConn;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlException;
 import fr.iuteam.websem_accidents_routiers.util.QueryBuild;
@@ -134,13 +135,17 @@ public class MainController {
     }
 
     @RequestMapping("insert")
-    public String insert(Model m, @ModelAttribute("accident") AccidentIn accident){
+    public String insert(Model m, @ModelAttribute("accident") AccidentIn accident, HttpServletRequest request) throws ParseException, SparqlException, IOException {
         m.addAttribute("lum", caracInsertor.getLumDico());
         m.addAttribute("agg", caracInsertor.getAggDico());
         m.addAttribute("atm", caracInsertor.getAtmDico());
         m.addAttribute("col", caracInsertor.getColDico());
         m.addAttribute("inter", caracInsertor.getIntDico());
 
+        if(request.getMethod().equals("POST")){
+            Insert insert = new Insert(accident);
+            System.out.println(accident.getDate().getDay());
+        }
 
         return "/insert";
     }

@@ -82,13 +82,14 @@ public class CaracInsertor extends AbstractInsertor {
         Dataset dataset = parser.getDataset();
 
         int datasetSize = dataset.getData().size();
-        int maxNumber = 50;
+        int maxNumber = 200;
 
         for(int i = 0; i < maxNumber; i++) {
 
             List<String> accident = dataset.getData().get(i);
             Resource accidentRoutierEvent = model.createResource("http://example.org/" + accident.get(dataset.getHeaders().indexOf("Num_Acc")));
             Resource accidentRoutier = model.createResource("http://example.org/accident_de_la_route");
+            Resource accidentLocation = model.createResource("http://example.org/location/" + i);
 
             Property aProp = model.createProperty("a");
 //            Property dayProp = model.createProperty("https://www.wikidata.org/wiki/Property:P837");
@@ -126,13 +127,13 @@ public class CaracInsertor extends AbstractInsertor {
             accidentRoutierEvent.addProperty(adrProp, accident.get(headersDico.get("adr")), XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(latProp, lat, XSDDatatype.XSDstring);
             accidentRoutierEvent.addProperty(longProp, lon, XSDDatatype.XSDstring);
-            accidentRoutierEvent.addProperty(locationIdProp, "http://example.org/location/" + i, XSDDatatype.XSDstring);
+            accidentRoutierEvent.addProperty(aProp, accidentLocation);
 
 
             insertLocation(model, i, comCode, lon, lat);
         }
 
-//        insertData(model);
+        insertData(model);
         model.write(System.out, "Turtle");
     }
 
