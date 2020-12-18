@@ -1,5 +1,6 @@
 package fr.iuteam.websem_accidents_routiers;
 
+import fr.iuteam.websem_accidents_routiers.entity.AccidentDraw;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlConn;
 import fr.iuteam.websem_accidents_routiers.sparql.SparqlException;
 import fr.iuteam.websem_accidents_routiers.util.QueryBuild;

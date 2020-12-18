@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sqparql All</title>
+</head>
+<body>
+<div class="table-responsive pt-5">
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Predi</th>
+            <th scope="col">Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${all}!=null" th:each="acc: ${all}">
+            <th scope="row" th:text="${acc.subject}"></th>
+            <td th:text="${acc.predi}"></td>
+            <td th:text="${acc.val}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

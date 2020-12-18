@@ -1,15 +1,30 @@
 package fr.iuteam.websem_accidents_routiers.controller;
 
 import fr.iuteam.websem_accidents_routiers.entity.Accident;
+import fr.iuteam.websem_accidents_routiers.entity.AccidentDraw;
+import fr.iuteam.websem_accidents_routiers.entity.AccidentIn;
+import fr.iuteam.websem_accidents_routiers.entity.AllResource;
 import fr.iuteam.websem_accidents_routiers.model_insertion.CaracInsertor;
+import fr.iuteam.websem_accidents_routiers.sparql.SparqlConn;
+import fr.iuteam.websem_accidents_routiers.sparql.SparqlException;
 import fr.iuteam.websem_accidents_routiers.util.QueryBuild;
 import fr.iuteam.websem_accidents_routiers.util.QueryBuilderException;
+import org.apache.jena.atlas.json.JsonValue;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
+import java.awt.print.Pageable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -17,24 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 public class MainController {
 
     private CaracInsertor caracInsertor = new CaracInsertor();
-    /*String datasetURL = "http://localhost:3030/test2";
-        String sparqlEndpoint = datasetURL + "/sparql";
-        String sparqlUpdate = datasetURL + "/update";
-        String graphStore = datasetURL + "/data";
-        RDFConnection conn = RDFConnectionFactory.connect(sparqlEndpoint,sparqlUpdate,graphStore);
-        QueryExecution qExec = conn.query("SELECT ?subject ?predicate ?object WHERE {?subject ?predicate ?object;}");
-        ResultSet rs = qExec.execSelect() ;
-        int i = 0;
-        while(rs.hasNext() && i<10) {
-            QuerySolution qs = rs.next() ;
-            Resource subject = qs.getResource("subject") ;
-            System.out.println("Subject: "+qs) ;
-            i++;
-        }*/
-        /*m.addAttribute("brands",brandService.findAllPage(p).getContent());
-        m.addAttribute("pageable", p);*/
     @RequestMapping("")
-    public String index(Model m, @ModelAttribute("accident") Accident accident, HttpServletRequest request) throws QueryBuilderException {
+    public String index(Model m, @ModelAttribute("accident") Accident accident, HttpServletRequest request) throws QueryBuilderException, ParseException, SparqlException, IOException {
 
         m.addAttribute("lum", caracInsertor.getLumDico());
         m.addAttribute("agg", caracInsertor.getAggDico());
@@ -43,74 +42,108 @@ public class MainController {
         m.addAttribute("inter", caracInsertor.getIntDico());
         if(request.getMethod().equals("POST")){
             QueryBuild build = new QueryBuild();
-            build.select("?subject", "?lum","?vlum", "?value","?atm", "?vatm", "?agg", "?vagg","?col", "?vcol","?inter", "?vinter")
+            build.select("?subject", "?lum","?vlum", "?value","?atm", "?vatm", "?agg", "?vagg","?col", "?vcol", "?i","?vi")
                     .where("?subject ?lum ?vlum")
                     .where("?subject ?atm ?vatm")
                     .where("?subject ?agg ?vagg")
                     .where("?subject ?col ?vcol")
-                    .where("?subject ?inter ?vinter");
+                    .where("?subject ?i ?vi");
 
-            accident.QbFilterList(build,accident.getLuminosity(),"?lum = <http://www.exemple.org/lumiere>",caracInsertor.getLumDico(),"?vlum");
+
+            build.filter("?atm = <http://www.exemple.org/conditions_atmo>").and()
+                .filter("?agg = <http://www.exemple.org/en_agglo_ou_hors_agglo>").and()
+                .filter("?col = <http://www.exemple.org/type_collision>").and()
+                .filter("?i = <http://www.exemple.org/intersection>").and()
+                .filter("?lum = <http://www.exemple.org/lumiere>");
+
+            if(!accident.getLuminosity().isEmpty()){
+                build.and();
+                accident.Qb2FilterList(build,accident.getLuminosity(),caracInsertor.getLumDico(),"?vlum");
+            }
             if(!accident.getAtm().isEmpty()){
                 build.and();
-                accident.QbFilterList(build,accident.getAtm(),"?atm = <http://www.exemple.org/conditions_atmo>",caracInsertor.getAtmDico(), "?vatm");
+                accident.Qb2FilterList(build,accident.getAtm(),caracInsertor.getAtmDico(), "?vatm");
             }
             if(!accident.getAgglo().isEmpty()){
                 build.and();
-                accident.QbFilterList(build,accident.getAgglo(),"?agg = <http://www.exemple.org/en_agglo_ou_hors_agglo>",caracInsertor.getAggDico(), "?vagg");
+                accident.Qb2FilterList(build,accident.getAgglo(),caracInsertor.getAggDico(), "?vagg");
             }
             if(!accident.getNbCol().isEmpty()){
                 build.and();
-                accident.QbFilterList(build,accident.getNbCol(),"?col = <http://www.exemple.org/type_collision>",caracInsertor.getColDico(), "?vcol");
+                accident.Qb2FilterList(build,accident.getNbCol(),caracInsertor.getColDico(), "?vcol");
             }
             if(!accident.getIntersection().isEmpty()){
                 build.and();
-                accident.QbFilterList(build,accident.getIntersection(),"?inter = <http://www.exemple.org/intersection>",caracInsertor.getIntDico(), "?vinter");
+                accident.Qb2FilterList(build,accident.getIntersection(),caracInsertor.getIntDico(), "?vi");
             }
 
-            build.limit(20);
+            build.limit(150);
             System.out.println(build);
+            SparqlConn sparqlConn = SparqlConn.getInstance();
+            RDFConnection conn = sparqlConn.getConn();
+            QueryExecution query = conn.query(build.toString());
+            ResultSet rs = query.execSelect() ;
+            List<AccidentDraw> lacc = new ArrayList<>();
+            while(rs.hasNext()) {
+                QuerySolution qs = rs.next() ;
+                AccidentDraw acc = new AccidentDraw();
+
+                /*qs.getLiteral("vcol").getString();*/
+                //qs.getLiteral("vi").getString();
+               // qs.getLiteral("vcol").getValue();
+                acc.setId(qs.getResource("subject").toString());
+                acc.setLum(qs.getLiteral("vlum").toString());
+                acc.setAtm(qs.getLiteral("vatm").toString()) ;
+                acc.setAgg(qs.getLiteral("vagg").toString()) ;
+                acc.setCol(qs.getLiteral("vcol").toString()) ;
+                acc.setInter(qs.getLiteral("vi").toString());
+                //System.out.println(qs.getLiteral("vinter").getValue().toString());
+                //acc.setInter() ;
+                lacc.add(acc);
+            }
+            m.addAttribute("lacc",lacc);
+
+
         }
         return "/index";
     }
 
-    @PostMapping("/t")
-    public String noAcci(Model m, @ModelAttribute("accident") Accident accident) throws QueryBuilderException {
 
-        return "/index";
-    }
-
-    @PostMapping("/accDate")
-    public String dateAcci(Model m, @ModelAttribute("accident") Accident accident) throws QueryBuilderException {
+    @GetMapping("/all")
+    public String all(Model m) throws ParseException, SparqlException, IOException {
         QueryBuild build = new QueryBuild();
-        build.select("?subject", "?lum","?vlum", "?value","?atm", "?vatm", "?agg", "?vagg","?col", "?vcol","?inter", "?vinter")
-                .where("?subject ?lum ?vlum")
-                .where("?subject ?atm ?vatm")
-                .where("?subject ?agg ?vagg")
-                .where("?subject ?col ?vcol")
-                .where("?subject ?inter ?vinter");
+        build.select("?subject", "?predi","?val")
+        .where("?subject ?predi ?val").limit(200);
+        SparqlConn sparqlConn = SparqlConn.getInstance();
+        RDFConnection conn = sparqlConn.getConn();
+        QueryExecution query = conn.query(build.toString());
+        //m.addAttribute("jsonld", query.execJson());
+        ResultSet rs = query.execSelect() ;
+        List<AllResource> lacc = new ArrayList<>();
+        while(rs.hasNext()) {
+            QuerySolution qs = rs.next() ;
+            AllResource acc = new AllResource();
+            acc.setSubject(qs.getResource("subject").toString());
+            //acc.setPredi(qs.getLiteral("predi").toString());
+            //acc.setVal(qs.getLiteral("val").getString());
+            lacc.add(acc);
 
-        accident.QbFilterList(build,accident.getLuminosity(),"?lum = <http://www.exemple.org/lumiere>",caracInsertor.getLumDico(),"?vlum");
-        build.and();
-        accident.QbFilterList(build,accident.getAtm(),"?atm = <http://www.exemple.org/conditions_atmo>",caracInsertor.getAtmDico(), "?vatm");
-        build.and();
-        accident.QbFilterList(build,accident.getAgglo(),"?agg = <http://www.exemple.org/en_agglo_ou_hors_agglo>",caracInsertor.getAggDico(), "?vagg");
-        build.and();
-        accident.QbFilterList(build,accident.getNbCol(),"?col = <http://www.exemple.org/type_collision>",caracInsertor.getColDico(), "?vcol");
-        build.and();
-        accident.QbFilterList(build,accident.getIntersection(),"?inter = <http://www.exemple.org/intersection>",caracInsertor.getIntDico(), "?vinter");
-
-
-
-
-        build.limit(20);
-        System.out.println(build);
-        //System.out.println(accident.getLuminosity());
-        //System.out.println(caracInsertor.getLumDico().get(accident.getLuminosity().get(0)));
-        //System.out.println(caracInsertor.getAtmDico().get(accident.getAtm()));
-        //System.out.println(caracInsertor.getAggDico().get(accident.getAgglo()));
-        //System.out.println(caracInsertor.getColDico().get(accident.getNbCol()));
-        System.out.println(caracInsertor.getIntDico().get(accident.getIntersection()));
-        return "redirect:/";
+        }
+        m.addAttribute("all",lacc);
+        return "/all";
     }
+
+    @RequestMapping("insert")
+    public String insert(Model m, @ModelAttribute("accident") AccidentIn accident){
+        m.addAttribute("lum", caracInsertor.getLumDico());
+        m.addAttribute("agg", caracInsertor.getAggDico());
+        m.addAttribute("atm", caracInsertor.getAtmDico());
+        m.addAttribute("col", caracInsertor.getColDico());
+        m.addAttribute("inter", caracInsertor.getIntDico());
+
+
+        return "/insert";
+    }
+
+
 }
