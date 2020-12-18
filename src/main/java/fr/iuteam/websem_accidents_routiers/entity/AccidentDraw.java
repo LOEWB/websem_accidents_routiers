@@ -7,18 +7,18 @@ import lombok.Data;
 
 
 @Data
-@JsonldType("http://exemple.org/accident")
+@JsonldType("http://www.example.org/accident")
 public class AccidentDraw {
     @JsonldId
     private String id;
-    @JsonldProperty("http://exemple.org/luminosity")
+    @JsonldProperty("http://www.example.org/luminosity")
     private String lum;
-    @JsonldProperty("http://exemple.org/atm")
+    @JsonldProperty("http://www.example.org/atm")
     private String atm  ;
-    @JsonldProperty("http://exemple.org/agg")
+    @JsonldProperty("http://www.example.org/agg")
     private String agg ;
-    @JsonldProperty("http://exemple.org/col")
+    @JsonldProperty("http://www.example.org/col")
     private String col;
-    @JsonldProperty("http://exemple.org/inter")
+    @JsonldProperty("http://www.example.org/inter")
     private String inter ;
 }

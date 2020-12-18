@@ -22,25 +22,25 @@ public class Insert {
     public Insert(AccidentIn accident) throws ParseException, SparqlException, IOException {
         this.model = ModelFactory.createDefaultModel();
         String id = UUID.randomUUID().toString();
-        Resource accidentRoutierEvent = model.createResource("http://example.org/" + accident.getId());
-        Resource accidentRoutier = model.createResource("http://example.org/accident_de_la_route");
-        Resource accidentLocation = model.createResource("http://example.org/location/" + id);
+        Resource accidentRoutierEvent = model.createResource("http://www.example.org/" + accident.getId());
+        Resource accidentRoutier = model.createResource("http://www.example.org/accident_de_la_route");
+        Resource accidentLocation = model.createResource("http://www.example.org/location/" + id);
 
         Property aProp = model.createProperty("a");
-        Property dayProp = model.createProperty("http://www.exemple.org/jour_du_mois");
-        Property monthProp = model.createProperty("http://www.exemple.org/mois");
-        Property timeProp = model.createProperty("http://www.exemple.org/heure");
-        Property lightProp = model.createProperty("http://www.exemple.org/lumiere");
+        Property dayProp = model.createProperty("http://www.example.org/jour_du_mois");
+        Property monthProp = model.createProperty("http://www.example.org/mois");
+        Property timeProp = model.createProperty("http://www.example.org/heure");
+        Property lightProp = model.createProperty("http://www.example.org/lumiere");
         Property depProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
         Property commProp = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
-        Property aggProp = model.createProperty("http://www.exemple.org/en_agglo_ou_hors_agglo");
-        Property intProp = model.createProperty("http://www.exemple.org/intersection");
-        Property atmProp = model.createProperty("http://www.exemple.org/conditions_atmo");
-        Property colProp = model.createProperty("http://www.exemple.org/type_collision");
-        Property adrProp = model.createProperty("http://www.exemple.org/adr_postale");
+        Property aggProp = model.createProperty("http://www.example.org/en_agglo_ou_hors_agglo");
+        Property intProp = model.createProperty("http://www.example.org/intersection");
+        Property atmProp = model.createProperty("http://www.example.org/conditions_atmo");
+        Property colProp = model.createProperty("http://www.example.org/type_collision");
+        Property adrProp = model.createProperty("http://www.example.org/adr_postale");
         Property latProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
         Property longProp = model.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
-        Property locationIdProp = model.createProperty("http://example.org/location");
+        Property locationIdProp = model.createProperty("http://www.example.org/location");
 
 
         String lat = accident.getLat();
@@ -67,13 +67,13 @@ public class Insert {
         try {
             Location loc = locationFetching.fetchByLongLat(lon, lat);
 
-            Resource locationInstance = model.createResource("http://example.org/location/" + id);
+            Resource locationInstance = model.createResource("http://www.example.org/location/" + id);
             Property commProp2 = model.createProperty("https://www.wikidata.org/wiki/Property:P131");
-            Property cityProp = model.createProperty("http://example.org/commune/");
-            Property addressProp = model.createProperty("http://example.org/adresse/");
-            Property postCodeProp = model.createProperty("http://example.org/code_postal/");
+            Property cityProp = model.createProperty("http://www.example.org/commune/");
+            Property addressProp = model.createProperty("http://www.example.org/adresse/");
+            Property postCodeProp = model.createProperty("http://www.example.org/code_postal/");
 
-            Resource location = model.createResource("http://example.org/location");
+            Resource location = model.createResource("http://www.example.org/location");
 
 
 

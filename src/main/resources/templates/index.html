@@ -85,7 +85,7 @@
     </table>
 </div>
 
-<script th:text="${json.toString()}">
+<script th:if="${json!=null}" th:text="${json.toString()}">
 
 </script>
 
